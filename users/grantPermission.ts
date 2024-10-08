@@ -7,17 +7,17 @@ async function main() {
   const db = client.db("admin")
 
   const username = "test"
-
   const dbName = `${username}-mydb`
+  const roles = [
+    {
+      role: "readWrite",
+      db: dbName,
+    },
+  ]
 
   await db.command({
     grantRolesToUser: username,
-    roles: [
-      {
-        role: "readWrite",
-        db: dbName,
-      },
-    ],
+    roles,
   })
 
   await client.close()
