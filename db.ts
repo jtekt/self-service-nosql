@@ -1,8 +1,6 @@
 import { MongoClient } from "mongodb"
-import dotenv from "dotenv"
-dotenv.config()
 
-const {
+export const {
   MONGODB_CONNECTION_STRING = "mongodb://localhost:27017",
   MONGODB_ADMIN_USERNAME,
   MONGODB_ADMIN_PASSWORD,
@@ -14,3 +12,12 @@ export const client = new MongoClient(MONGODB_CONNECTION_STRING, {
     password: MONGODB_ADMIN_PASSWORD,
   },
 })
+
+client
+  .connect()
+  .then(() => {
+    console.log(`MongoDB client connected`)
+  })
+  .catch((error) => {
+    console.error(error)
+  })
