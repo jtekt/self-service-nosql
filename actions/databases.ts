@@ -7,7 +7,7 @@ import {
   getDbOfUser,
   getDbsOfuser,
 } from "../lib/databases"
-import { DB_HOST, DB_PORT } from "@/config"
+import { MONGODB_HOST, MONGODB_PORT } from "@/config"
 
 import { redirect } from "next/navigation"
 
@@ -20,7 +20,7 @@ export const getDatabaseCache = cache(async (dbName: string) => {
   const username = await getUserNameFromSession()
   const db = await getDbOfUser(username, dbName)
 
-  return { username, db, host: DB_HOST, port: DB_PORT }
+  return { username, db, host: MONGODB_HOST, port: MONGODB_PORT }
 })
 
 export const createDbAction = async (state: any, formData: FormData) => {

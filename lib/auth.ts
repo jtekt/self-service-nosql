@@ -1,7 +1,8 @@
 import * as jose from "jose"
 import { encodedJwtSecret } from "@/config"
 import { MongoClient } from "mongodb"
-import { client, MONGODB_CONNECTION_STRING } from "@/db"
+import { client } from "@/db"
+import { mongoDbConectionString } from "@/config"
 
 export async function createToken(data: any) {
   const token = await new jose.SignJWT(data)
@@ -12,7 +13,7 @@ export async function createToken(data: any) {
 }
 
 export async function login(username: string, password: string) {
-  const tempClient = new MongoClient(MONGODB_CONNECTION_STRING, {
+  const tempClient = new MongoClient(mongoDbConectionString, {
     auth: {
       username,
       password,

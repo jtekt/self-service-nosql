@@ -40,7 +40,7 @@ spec:
             - name: NEXT_PUBLIC_DB_HOST
               value: "172.16.98.150"
             - name: NEXT_PUBLIC_DB_PORT
-              value: "32432"
+              value: "31017"
           envFrom:
             - secretRef:
                 name: env-secret
