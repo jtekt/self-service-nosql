@@ -1,0 +1,43 @@
+"use server"
+import { cache } from "react"
+import { getUserNameFromSession } from "../lib/sessions"
+import {
+  createDb,
+  // deleteDB,
+  getDbOfUser,
+  getDbsOfuser,
+} from "../lib/databases"
+import { DB_HOST, DB_PORT } from "@/config"
+
+import { redirect } from "next/navigation"
+
+export const getDatabasesCache = cache(async () => {
+  const username = await getUserNameFromSession()
+  return await getDbsOfuser(username)
+})
+
+export const getDatabaseCache = cache(async (dbName: string) => {
+  const username = await getUserNameFromSession()
+  const db = await getDbOfUser(username, dbName)
+
+  return { username, db, host: DB_HOST, port: DB_PORT }
+})
+
+export const createDbAction = async (state: any, formData: FormData) => {
+  const dbName = formData.get("database")?.toString()
+
+  if (!dbName) return { error: "Name not provided" }
+
+  const username = (await getUserNameFromSession()) as string
+
+  let fullDbName: string
+
+  try {
+    fullDbName = await createDb(dbName, username)
+  } catch (error: any) {
+    return {
+      error: error.message,
+    }
+  }
+  redirect(`/databases/${fullDbName}`)
+}
