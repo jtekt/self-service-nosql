@@ -15,9 +15,7 @@ export default async function DatabasePage({
 }: {
   params: { name: string }
 }) {
-  const NEXT_PUBLIC_MONGODB_CONNECTION_STRING = env(
-    "NEXT_PUBLIC_MONGODB_CONNECTION_STRING"
-  )
+  const NEXT_PUBLIC_MONGODB_HOST = env("NEXT_PUBLIC_MONGODB_HOST")
 
   const database = await getDatabaseCache(params.name)
 
@@ -32,16 +30,15 @@ export default async function DatabasePage({
     },
   ]
 
-  if (NEXT_PUBLIC_MONGODB_CONNECTION_STRING) {
-    const insertIndex = NEXT_PUBLIC_MONGODB_CONNECTION_STRING.indexOf("://") + 3
-    const formattedString =
-      NEXT_PUBLIC_MONGODB_CONNECTION_STRING.slice(0, insertIndex) +
-      `${database.username}:<password>@` +
-      NEXT_PUBLIC_MONGODB_CONNECTION_STRING.slice(insertIndex)
+  if (NEXT_PUBLIC_MONGODB_HOST) {
+    fields.push({
+      label: "Host",
+      value: NEXT_PUBLIC_MONGODB_HOST,
+    })
 
     fields.push({
       label: "Connection string",
-      value: formattedString,
+      value: `mongodb://${database.username}:<PASSWORD>@${NEXT_PUBLIC_MONGODB_HOST}/${database.db}?authSource=admin&directConnection=true`,
     })
   }
 
