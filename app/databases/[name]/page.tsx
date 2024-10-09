@@ -21,14 +21,14 @@ export default async function DatabasePage({
   const database = await getDatabaseCache(params.name)
 
   const fields = [
-    {
-      label: "Host",
-      value: NEXT_PUBLIC_DB_HOST || database.host,
-    },
-    {
-      label: "Port",
-      value: NEXT_PUBLIC_DB_PORT || database.port,
-    },
+    // {
+    //   label: "Host",
+    //   value: NEXT_PUBLIC_DB_HOST || database.host,
+    // },
+    // {
+    //   label: "Port",
+    //   value: NEXT_PUBLIC_DB_PORT || database.port,
+    // },
     {
       label: "Database",
       value: database.db,
@@ -37,12 +37,12 @@ export default async function DatabasePage({
       label: "User",
       value: database.username,
     },
-    {
-      label: "Connection string",
-      value: `mongodb://${database.username}:YOUR_PASSWORD@${
-        NEXT_PUBLIC_DB_HOST || database.host
-      }:${NEXT_PUBLIC_DB_PORT || database.port}/${database.db}`,
-    },
+    // {
+    //   label: "Connection string",
+    //   value: `mongodb://${database.username}:YOUR_PASSWORD@${
+    //     NEXT_PUBLIC_DB_HOST || database.host
+    //   }:${NEXT_PUBLIC_DB_PORT || database.port}/${database.db}`,
+    // },
   ]
 
   return (
