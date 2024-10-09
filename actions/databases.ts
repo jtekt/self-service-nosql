@@ -7,7 +7,6 @@ import {
   getDbOfUser,
   getDbsOfuser,
 } from "../lib/databases"
-// import { MONGODB_HOST, MONGODB_PORT } from "@/config"
 
 import { redirect } from "next/navigation"
 

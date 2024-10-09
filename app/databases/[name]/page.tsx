@@ -15,20 +15,13 @@ export default async function DatabasePage({
 }: {
   params: { name: string }
 }) {
-  const NEXT_PUBLIC_DB_HOST = env("NEXT_PUBLIC_DB_HOST")
-  const NEXT_PUBLIC_DB_PORT = env("NEXT_PUBLIC_DB_PORT")
+  const NEXT_PUBLIC_MONGODB_CONNECTION_STRING = env(
+    "NEXT_PUBLIC_MONGODB_CONNECTION_STRING"
+  )
 
   const database = await getDatabaseCache(params.name)
 
   const fields = [
-    // {
-    //   label: "Host",
-    //   value: NEXT_PUBLIC_DB_HOST || database.host,
-    // },
-    // {
-    //   label: "Port",
-    //   value: NEXT_PUBLIC_DB_PORT || database.port,
-    // },
     {
       label: "Database",
       value: database.db,
@@ -37,13 +30,20 @@ export default async function DatabasePage({
       label: "User",
       value: database.username,
     },
-    // {
-    //   label: "Connection string",
-    //   value: `mongodb://${database.username}:YOUR_PASSWORD@${
-    //     NEXT_PUBLIC_DB_HOST || database.host
-    //   }:${NEXT_PUBLIC_DB_PORT || database.port}/${database.db}`,
-    // },
   ]
+
+  if (NEXT_PUBLIC_MONGODB_CONNECTION_STRING) {
+    const insertIndex = NEXT_PUBLIC_MONGODB_CONNECTION_STRING.indexOf("://") + 3
+    const formattedString =
+      NEXT_PUBLIC_MONGODB_CONNECTION_STRING.slice(0, insertIndex) +
+      `${database.username}:<password>@` +
+      NEXT_PUBLIC_MONGODB_CONNECTION_STRING.slice(insertIndex)
+
+    fields.push({
+      label: "Connection string",
+      value: formattedString,
+    })
+  }
 
   return (
     <>
