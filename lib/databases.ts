@@ -78,7 +78,7 @@ export const createDb = async (database: string, ownerName: string) => {
 
   const roles = [
     {
-      role: "dbAdmin",
+      role: "dbOwner",
       db: fullDbName,
     },
   ]
