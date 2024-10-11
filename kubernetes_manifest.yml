@@ -15,9 +15,6 @@ spec:
       containers:
         - name: ${APPLICATION_NAME}
           image: ${CONTAINER_IMAGE_TAGGED}
-          env:
-            - name: NEXT_PUBLIC_MONGODB_HOST
-              value: 172.16.98.150:31017
           envFrom:
             - secretRef:
                 name: env-secret
