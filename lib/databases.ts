@@ -12,10 +12,6 @@ export const getUserIdByName = async (username: string) => {
   return user.userId.toString()
 }
 
-// export const getUserNameById = async (userId: number) => {
-//   // TODO
-// }
-
 export const getDbsOfuser = async (username: string) => {
   const db = client.db("admin")
 
@@ -27,12 +23,6 @@ export const getDbsOfuser = async (username: string) => {
 
   return user.roles.map(({ db }: any) => db)
 }
-
-// export async function checkIfDbExists(database: string) {
-//   const query = `SELECT 1 FROM pg_catalog.pg_database WHERE pg_catalog.pg_database.datname = $1`
-//   const { rows } = await pool.query(query, [database])
-//   return !!rows.length
-// }
 
 export const getDbOfUser = async (username: string, dbName: string) => {
   const db = client.db("admin")
