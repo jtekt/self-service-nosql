@@ -6,6 +6,7 @@ import {
   // deleteDB,
   getDbOfUser,
   getDbsOfuser,
+  getReplicasetInfo,
 } from "../lib/databases"
 
 import { redirect } from "next/navigation"
@@ -39,4 +40,9 @@ export const createDbAction = async (state: any, formData: FormData) => {
     }
   }
   redirect(`/databases/${fullDbName}`)
+}
+
+export const getReplicasetInfoCache = async () => {
+  // UNUSED
+  return await getReplicasetInfo()
 }

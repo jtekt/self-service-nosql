@@ -81,8 +81,14 @@ export const createDb = async (database: string, ownerName: string) => {
   return fullDbName
 }
 
-// export const deleteDB = async (name: string) => {
-//   const query = format(`DROP DATABASE %I`, name)
+export const getReplicasetInfo = async () => {
+  // UNUSED
+  const db = client.db("admin")
 
-//   await pool.query(query)
-// }
+  const result = await db.command({
+    hello: 1,
+  })
+
+  console.log(result)
+  return result
+}
