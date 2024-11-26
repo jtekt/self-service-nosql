@@ -1,4 +1,6 @@
-# self-mongodb
+# Service NoSQL
+
+Self service NoSQL databases
 
 To install dependencies:
 
