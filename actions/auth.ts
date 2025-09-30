@@ -1,8 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { login, register } from "../lib/auth";
-import { createSession } from "../lib/sessions";
+import { login, register } from "@/lib/auth";
+import { createSession } from "@/lib/sessions";
 
 export async function loginAction(state: any, formData: FormData) {
   const username = formData.get("username")?.toString();
