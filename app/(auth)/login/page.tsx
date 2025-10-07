@@ -18,14 +18,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { useFormState } from "react-dom";
 import { loginAction } from "@/actions/auth";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// const formSchema = z.object({
+//   username: z.string(),
+//   password: z.string(),
+// });
 
 export default function () {
-  // Not yet working in React 18.3.1
+  // Not yet working in React 18
   // const [state, action, pending] = useActionState(handleFormSubmit, undefined)
-
   const [state, formAction] = useFormState(loginAction, undefined);
 
   const form = useForm({
+    // const form = useForm<z.infer<typeof formSchema>>({
+    // resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       password: "",
@@ -39,6 +47,7 @@ export default function () {
       </CardHeader>
       <CardContent>
         <Form {...form}>
+          {/* TODO: use onSubmit instead of action because React Hook Form */}
           <form action={formAction} className="space-y-4">
             <FormField
               control={form.control}

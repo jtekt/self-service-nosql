@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { Input } from "@/components/ui/input"
-import { useFormState } from "react-dom"
-import { Save } from "lucide-react"
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { useFormState } from "react-dom";
+import { Save } from "lucide-react";
 
 import {
   Form,
@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 
 import {
   Breadcrumb,
@@ -22,18 +22,24 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { SubmitButton } from "@/components/SubmitButton"
-import { createDbAction } from "@/actions/databases"
+} from "@/components/ui/breadcrumb";
+import { SubmitButton } from "@/components/SubmitButton";
+import { createDbAction } from "@/actions/databases";
+import z from "zod";
+
+// TODO: client-side validation does not work when using form's action
+// const formSchema = z.object({
+//   database: z.string().min(3, { message: "Too short" }),
+// });
 
 export default function () {
   const form = useForm({
     defaultValues: {
       database: "",
     },
-  })
+  });
 
-  const [state, formAction] = useFormState(createDbAction, undefined)
+  const [state, formAction] = useFormState(createDbAction, undefined);
 
   return (
     <>
@@ -50,6 +56,7 @@ export default function () {
       </Breadcrumb>
       <h2 className="text-4xl my-4">Databases</h2>
       <Form {...form}>
+        {/* TODO: use onSubmit instead of action because React Hook Form */}
         <form action={formAction} className="space-y-4">
           <FormField
             control={form.control}
@@ -77,5 +84,5 @@ export default function () {
       </Form>
       {state?.error && <div className="my-4 text-center">{state?.error}</div>}
     </>
-  )
+  );
 }

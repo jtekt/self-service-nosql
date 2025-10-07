@@ -16,12 +16,13 @@ export async function loginAction(state: any, formData: FormData) {
 
     await createSession(username);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return {
       error: "Login failed",
     };
   }
 
+  // TODO: might need to remove if using React Hook Form's onSubmit
   redirect("/databases");
 }
 
@@ -49,5 +50,6 @@ export async function createUserAction(state: any, formData: FormData) {
     };
   }
 
+  // TODO: might need to remove if using React Hook Form's onSubmit
   redirect("/databases");
 }

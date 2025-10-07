@@ -19,11 +19,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SubmitButton } from "@/components/SubmitButton";
 import { createUserAction } from "@/actions/auth";
 import { useFormState } from "react-dom";
+import { z } from "zod";
+// import { zodResolver } from "@hookform/resolvers/zod";
+
+// TODO: client side validation is bypassed when using form's action
+const formSchema = z
+  .object({
+    username: z.string().min(3, { message: "Name is too short" }),
+    password: z.string().min(6, { message: "Password is too short" }),
+    passwordConfirm: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "Passwords don't match",
+    path: ["passwordConfirm"],
+  });
 
 export default function () {
   const [state, formAction] = useFormState(createUserAction, undefined);
 
   const form = useForm({
+    // const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       username: "",
       password: "",
@@ -38,6 +53,7 @@ export default function () {
       </CardHeader>
       <CardContent>
         <Form {...form}>
+          {/* TODO: use onSubmit instead of action because React Hook Form */}
           <form action={formAction} className="space-y-4">
             <FormField
               control={form.control}

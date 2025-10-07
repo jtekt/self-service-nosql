@@ -39,6 +39,8 @@ export const createDbAction = async (state: any, formData: FormData) => {
       error: error.message,
     };
   }
+
+  // TODO: might need to remove if using React Hook Form's onSubmit
   redirect(`/databases/${fullDbName}`);
 };
 
