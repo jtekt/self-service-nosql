@@ -4,38 +4,27 @@ import { redirect } from "next/navigation";
 import { login, register } from "@/lib/auth";
 import { createSession } from "@/lib/sessions";
 
-export async function loginAction(state: any, formData: FormData) {
-  const username = formData.get("username")?.toString();
-  const password = formData.get("password")?.toString();
+type Credentials = {
+  username: string;
+  password: string;
+};
 
-  if (!username) return { error: "Missing username" };
-  if (!password) return { error: "Missing password" };
+export async function loginAction(state: any, credentials: Credentials) {
+  const { username, password } = credentials;
 
   try {
     await login(username, password);
     await createSession(username);
   } catch (error: any) {
     console.error(error);
-    return {
-      error: error.message,
-    };
+    return { error: error.message };
   }
 
   redirect("/databases");
 }
 
-export async function createUserAction(state: any, formData: FormData) {
-  // A.K.A register
-  const username = formData.get("username")?.toString();
-  const password = formData.get("password")?.toString();
-  const passwordConfirm = formData.get("passwordConfirm")?.toString();
-
-  if (!username) return { error: "Missing username" };
-  if (!password) return { error: "Missing password" };
-  if (!passwordConfirm) return { error: "Missing passwordConfirm" };
-
-  if (passwordConfirm !== password)
-    return { error: "Password confirm does not match" };
+export async function createUserAction(state: any, credentials: Credentials) {
+  const { username, password } = credentials;
 
   try {
     await register(username, password);
@@ -43,9 +32,7 @@ export async function createUserAction(state: any, formData: FormData) {
     await createSession(username);
   } catch (error: any) {
     console.log(error);
-    return {
-      error: error.message,
-    };
+    return { error: error.message };
   }
 
   redirect("/databases");

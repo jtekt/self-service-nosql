@@ -10,21 +10,18 @@ import {
 
 import { redirect } from "next/navigation";
 
-export const createDbAction = async (state: any, formData: FormData) => {
-  const dbName = formData.get("database")?.toString();
-
-  if (!dbName) return { error: "Name not provided" };
-
+export const createDbAction = async (
+  state: any,
+  { name }: { name: string }
+) => {
   const username = (await getUserNameFromSession()) as string;
 
   let fullDbName: string;
 
   try {
-    fullDbName = await createDb(dbName, username);
+    fullDbName = await createDb(name, username);
   } catch (error: any) {
-    return {
-      error: error.message,
-    };
+    return { error: error.message };
   }
 
   redirect(`/databases/${fullDbName}`);

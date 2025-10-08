@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-
 import {
   Form,
   FormControl,
@@ -13,20 +12,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import { SubmitButton } from "@/components/SubmitButton";
 import { createUserAction } from "@/actions/auth";
-import { useFormState } from "react-dom";
 import { z } from "zod";
-// import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { startTransition, useActionState } from "react";
+import { Button } from "@/components/ui/button";
 
-// TODO: client side validation is bypassed when using form's action
 const formSchema = z
   .object({
-    username: z.string().min(3, { message: "Name is too short" }),
-    password: z.string().min(6, { message: "Password is too short" }),
+    username: z.string().min(2, {
+      message: "Username must be at least 2 characters.",
+    }),
+    password: z.string(),
     passwordConfirm: z.string(),
   })
   .refine((data) => data.password === data.passwordConfirm, {
@@ -35,16 +33,20 @@ const formSchema = z
   });
 
 export default function () {
-  const [state, formAction] = useFormState(createUserAction, undefined);
+  const [state, action, pending] = useActionState(createUserAction, undefined);
 
-  const form = useForm({
-    // const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       password: "",
       passwordConfirm: "",
     },
   });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    startTransition(() => action(values));
+  }
 
   return (
     <Card className="max-w-2xl mx-auto">
@@ -53,8 +55,7 @@ export default function () {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          {/* TODO: use onSubmit instead of action because React Hook Form */}
-          <form action={formAction} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="username"
@@ -102,7 +103,7 @@ export default function () {
                 </FormItem>
               )}
             />
-            <SubmitButton>Register</SubmitButton>
+            <Button disabled={pending}>Register</Button>
           </form>
         </Form>
         <div className="text-center my-4">

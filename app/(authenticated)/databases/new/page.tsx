@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { useFormState } from "react-dom";
 import { Save } from "lucide-react";
 
 import {
@@ -23,23 +22,34 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { SubmitButton } from "@/components/SubmitButton";
 import { createDbAction } from "@/actions/databases";
-import z from "zod";
+import { z } from "zod";
+import { startTransition, useActionState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
 
-// TODO: client-side validation does not work when using form's action
-// const formSchema = z.object({
-//   database: z.string().min(3, { message: "Too short" }),
-// });
+const formSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "Name is too short" })
+    .regex(/^[a-z0-9_-]+$/, { message: "Invalid format" }),
+});
 
 export default function () {
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      database: "",
+      name: "",
     },
   });
 
-  const [state, formAction] = useFormState(createDbAction, undefined);
+  const [state, action, pending] = useActionState(createDbAction, undefined);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    startTransition(() => {
+      action(values);
+    });
+  }
 
   return (
     <>
@@ -56,17 +66,16 @@ export default function () {
       </Breadcrumb>
       <h2 className="text-4xl my-4">Databases</h2>
       <Form {...form}>
-        {/* TODO: use onSubmit instead of action because React Hook Form */}
-        <form action={formAction} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="database"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Database</FormLabel>
+                <FormLabel>Database name</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Name"
+                    placeholder="my-awesome-database"
                     {...field}
                     pattern="^[a-zA-Z0-9-_]*$"
                   />
@@ -77,9 +86,9 @@ export default function () {
             )}
           />
 
-          <SubmitButton>
+          <Button disabled={pending}>
             <Save />
-          </SubmitButton>
+          </Button>
         </form>
       </Form>
       {state?.error && <div className="my-4 text-center">{state?.error}</div>}

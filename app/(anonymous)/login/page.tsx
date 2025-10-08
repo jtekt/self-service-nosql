@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
-import { SubmitButton } from "@/components/SubmitButton";
 import {
   Form,
   FormControl,
@@ -15,30 +14,31 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import { useFormState } from "react-dom";
 import { loginAction } from "@/actions/auth";
-import z from "zod";
+import { Button } from "@/components/ui/button";
+import { startTransition, useActionState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-// const formSchema = z.object({
-//   username: z.string(),
-//   password: z.string(),
-// });
+const formSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+});
 
 export default function () {
-  // Not yet working in React 18
-  // const [state, action, pending] = useActionState(handleFormSubmit, undefined)
-  const [state, formAction] = useFormState(loginAction, undefined);
+  const [state, action, pending] = useActionState(loginAction, undefined);
 
-  const form = useForm({
-    // const form = useForm<z.infer<typeof formSchema>>({
-    // resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    startTransition(() => action(values));
+  }
 
   return (
     <Card className="mx-auto max-w-2xl">
@@ -47,8 +47,7 @@ export default function () {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          {/* TODO: use onSubmit instead of action because React Hook Form */}
-          <form action={formAction} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="username"
@@ -77,12 +76,12 @@ export default function () {
                 </FormItem>
               )}
             />
-            <SubmitButton>
+            <Button disabled={pending}>
               <div className="flex gap-2 items-center">
                 <LogIn />
                 <span>Login</span>
               </div>
-            </SubmitButton>
+            </Button>
           </form>
 
           <div className="text-center my-4">

@@ -10,11 +10,12 @@ import {
 import { env } from "next-runtime-env"
 import { getDatabaseCache } from "@/actions/databases"
 
-export default async function DatabasePage({
-  params,
-}: {
-  params: { name: string }
-}) {
+export default async function DatabasePage(
+  props: {
+    params: Promise<{ name: string }>
+  }
+) {
+  const params = await props.params;
   const NEXT_PUBLIC_MONGODB_HOST = env("NEXT_PUBLIC_MONGODB_HOST")
 
   const database = await getDatabaseCache(params.name)
