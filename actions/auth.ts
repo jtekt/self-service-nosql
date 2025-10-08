@@ -13,16 +13,14 @@ export async function loginAction(state: any, formData: FormData) {
 
   try {
     await login(username, password);
-
     await createSession(username);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     return {
-      error: "Login failed",
+      error: error.message,
     };
   }
 
-  // TODO: might need to remove if using React Hook Form's onSubmit
   redirect("/databases");
 }
 
@@ -43,13 +41,12 @@ export async function createUserAction(state: any, formData: FormData) {
     await register(username, password);
 
     await createSession(username);
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     return {
-      error: "Registration failed",
+      error: error.message,
     };
   }
 
-  // TODO: might need to remove if using React Hook Form's onSubmit
   redirect("/databases");
 }
