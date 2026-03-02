@@ -44,7 +44,7 @@ metadata:
     gethomepage.dev/group: Self-Service Suite
     gethomepage.dev/name: Self-service NoSQL
     gethomepage.dev/description: Allows users to create databases in MongoDB on their own
-    gethomepage.dev/icon: https://gitlab.jtektrnd.net/uploads/-/system/project/avatar/2261/self-grafana.png
+    gethomepage.dev/icon: https://gitlab.jtektrnd.net/uploads/-/system/project/avatar/2584/self-nosql.png
     gethomepage.dev/pod-selector: app=${APPLICATION_NAME}
 
 spec:
