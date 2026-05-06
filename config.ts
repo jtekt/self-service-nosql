@@ -7,8 +7,7 @@ export const {
 
 export const mongoDbConectionString = MONGODB_CONNECTION_STRING;
 
-// UNUSED FOR NOW
 export const redactedConnectionString = mongoDbConectionString.replace(
   /:.*@/,
-  "://<USERNAME>:<PASSWORD>@"
+  "://<USERNAME>:<PASSWORD>@",
 );
