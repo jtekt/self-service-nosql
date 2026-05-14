@@ -2,10 +2,6 @@ stages:
   - build
   - deploy
 
-image: moreillon/ci-dind:4bca50d7
-services:
-  - name: docker:24.0.7-dind
-
 variables:
   APPLICATION_NAME: self-service-nosql
   CONTAINER_IMAGE_NAME: ${APPLICATION_NAME}
@@ -16,8 +12,6 @@ variables:
 
 build:
   stage: build
-  tags:
-    - dind
   only:
     - master
     - main
@@ -26,21 +20,13 @@ build:
     - >
       aws ecr create-repository --repository-name ${CONTAINER_IMAGE_NAME}
       || echo "Repository might have already existed"
-    # Log in to the registry (AWS credentials are stored as GitLab env variables)
-    - >
-      aws ecr get-login-password
-      | docker login
-      --username AWS
-      --password-stdin
-      ${AWS_ECR_URL}
+
   script:
     - docker build -t ${CONTAINER_IMAGE_TAGGED} .
     - docker push ${CONTAINER_IMAGE_TAGGED}
 
 deploy:
   stage: deploy
-  tags:
-    - dind
   only:
     - master
     - main
