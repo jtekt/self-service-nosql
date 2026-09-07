@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/toggle-mode";
+import { HelpLink } from "@/components/help-link";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { PublicEnvScript } from "next-runtime-env";
 
 const fontSans = FontSans({
@@ -11,7 +14,7 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "Self service noSQL",
+  title: "Self-Service NoSQL",
   description: "Self service noSQL databases",
 };
 
@@ -27,7 +30,7 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "flex min-h-screen flex-col bg-background font-sans antialiased",
           fontSans.variable
         )}
       >
@@ -37,8 +40,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <header className="p-4 text-2xl border-b">Self service NoSQL</header>
-          <main className="max-w-3xl mx-auto p-4">{children}</main>
+          <header className="flex h-12 items-center gap-2 border-b px-4">
+            <Link href="/" className="mr-auto text-base font-semibold">
+              Self-Service NoSQL
+            </Link>
+            <ModeToggle />
+            <HelpLink />
+          </header>
+          <main className="mx-auto w-full max-w-3xl flex-1 p-4">{children}</main>
+          <footer className="border-t p-4 text-center text-sm">
+            Self-Service NoSQL | JTEKT Corporation
+          </footer>
         </ThemeProvider>
       </body>
     </html>
