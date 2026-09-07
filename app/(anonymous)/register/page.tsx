@@ -1,7 +1,15 @@
 "use client";
 
+import Link from "next/link";
+import { startTransition, useActionState } from "react";
 import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Loader2 } from "lucide-react";
+
+import { createUserAction } from "@/actions/auth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -11,20 +19,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { createUserAction } from "@/actions/auth";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { startTransition, useActionState } from "react";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z
   .object({
-    username: z.string().min(2, {
-      message: "Username must be at least 2 characters.",
-    }),
-    password: z.string(),
+    username: z
+      .string()
+      .min(2, { message: "Username must be at least 2 characters." })
+      .regex(/^[a-z0-9_]*$/, {
+        message: "Lowercase letters, numbers and underscores only",
+      }),
+    password: z.string().min(1, "Password is required"),
     passwordConfirm: z.string(),
   })
   .refine((data) => data.password === data.passwordConfirm, {
@@ -32,28 +37,24 @@ const formSchema = z
     path: ["passwordConfirm"],
   });
 
-export default function () {
-  const [state, action, pending] = useActionState(createUserAction, undefined);
-
+export default function RegisterPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-      passwordConfirm: "",
-    },
+    defaultValues: { username: "", password: "", passwordConfirm: "" },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const [state, action, pending] = useActionState(createUserAction, undefined);
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(() => action(values));
   }
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="mx-auto max-w-md">
       <CardHeader>
         <CardTitle>Register</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -63,11 +64,7 @@ export default function () {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Username"
-                      {...field}
-                      pattern="^[a-z0-9_]*$"
-                    />
+                    <Input placeholder="Username" {...field} />
                   </FormControl>
                   <FormDescription>Lowercase alphanumeric only</FormDescription>
                   <FormMessage />
@@ -81,39 +78,44 @@ export default function () {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Password" type="password" {...field} />
+                    <Input type="password" placeholder="Password" {...field} />
                   </FormControl>
-                  {/* <FormDescription>Your password</FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="passwordConfirm"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password confirm</FormLabel>
+                  <FormLabel>Confirm password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Password" type="password" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="Confirm password"
+                      {...field}
+                    />
                   </FormControl>
-                  {/* <FormDescription>Password confirm</FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button disabled={pending}>Register</Button>
+
+            {state?.error && (
+              <p className="text-sm text-destructive">{state.error}</p>
+            )}
+
+            <Button type="submit" className="w-full" disabled={pending}>
+              {pending ? <Loader2 className="animate-spin" /> : "Register"}
+            </Button>
           </form>
         </Form>
-        <div className="text-center my-4">
-          {state?.error && <p>{state?.error}</p>}
-        </div>
 
-        <p className="text-center mt-4">
-          Already have an account? Login{" "}
+        <p className="text-center text-sm">
+          Already have an account?{" "}
           <Link href="/login" className="font-bold text-primary">
-            here
+            Login here
           </Link>
         </p>
       </CardContent>
