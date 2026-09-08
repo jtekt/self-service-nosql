@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/toggle-mode";
 import { HelpLink } from "@/components/help-link";
+import { LogoutButton } from "@/components/logout-button";
+import { getUserNameFromSession } from "@/lib/sessions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { PublicEnvScript } from "next-runtime-env";
@@ -18,11 +20,13 @@ export const metadata: Metadata = {
   description: "Self service noSQL databases",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const username = await getUserNameFromSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -46,6 +50,7 @@ export default function RootLayout({
             </Link>
             <ModeToggle />
             <HelpLink />
+            {username && <LogoutButton />}
           </header>
           <main className="mx-auto w-full max-w-3xl flex-1 p-4">{children}</main>
           <footer className="border-t p-4 text-center text-sm">

@@ -41,3 +41,7 @@ export async function getUserNameFromSession(): Promise<string> {
   const session = await decrypt(cookie);
   return session?.username as string;
 }
+
+export async function deleteSession() {
+  (await cookies()).delete(SESSION_COOKIE_NAME);
+}

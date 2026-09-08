@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { login, register } from "@/lib/auth";
-import { createSession } from "@/lib/sessions";
+import { createSession, deleteSession } from "@/lib/sessions";
 
 type Credentials = {
   username: string;
@@ -36,4 +36,9 @@ export async function createUserAction(state: any, credentials: Credentials) {
   }
 
   redirect("/databases");
+}
+
+export async function logoutAction() {
+  await deleteSession();
+  redirect("/login");
 }
