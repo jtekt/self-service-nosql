@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/toggle-mode";
 import { HelpLink } from "@/components/help-link";
 import { LogoutButton } from "@/components/logout-button";
+import { AppIcon } from "@/components/app-icon";
 import { getUserNameFromSession } from "@/lib/sessions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -45,7 +46,11 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <header className="flex h-12 items-center gap-2 border-b px-4">
-            <Link href="/" className="mr-auto text-base font-semibold">
+            <Link
+              href="/"
+              className="mr-auto flex items-center gap-2 text-base font-semibold"
+            >
+              <AppIcon className="size-5 shrink-0" />
               Self-Service NoSQL
             </Link>
             <ModeToggle />
