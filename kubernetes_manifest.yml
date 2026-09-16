@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: self-service-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: self-service-mongodb
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: self-service-mongodb
+    spec:
+      containers:
+        - name: self-service-mongodb
+          image: ${CONTAINER_IMAGE_TAGGED}
+          env:
+          - name: NEXT_PUBLIC_MONGODB_HOST
+            #value: mongodb.public.jtektrnd.net
+            value: mongodb.ssc.jtektrnd.net
+          envFrom:
+            - secretRef:
+                name: self-service-mongodb-es
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "10m"
+            limits:
+              memory: "800Mi"
+              cpu: "500m"
+      imagePullSecrets:
+        - name: ecr-credentials
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: self-service-mongodb
+spec:
+  ports:
+    - port: 3000
+  selector:
+    app.kubernetes.io/name: self-service-mongodb
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: self-service-mongodb
+  annotations:
+    alb.ingress.kubernetes.io/success-codes: 200-399
+
+    # TODO: remove once configured at IngressClassParams level
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Self-Service Suite
+    gethomepage.dev/name: Self-service MongoDB
+    gethomepage.dev/description: Allows users to create accounts and databases in MongoDB on their own
+    gethomepage.dev/icon: http://gitlab.jtektrnd.net/uploads/-/system/project/avatar/2584/self-nosql.png
+spec:
+  rules:
+  - host: self-service-mongodb.ssc.jtektrnd.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: self-service-mongodb
+            port:
+              number: 3000
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: self-service-mongodb
+spec:
+  refreshInterval: 1h0m0s
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: ClusterSecretStore
+  dataFrom:
+    - extract:
+        key: eks/eso/public/self-service-mongodb
+  target:
+    name: self-service-mongodb-es
+    creationPolicy: Orphan
