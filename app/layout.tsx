@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/toggle-mode";
 import { HelpLink } from "@/components/help-link";
+import { AppsLink } from "@/components/apps-link";
 import { LogoutButton } from "@/components/logout-button";
 import { AppIcon } from "@/components/app-icon";
 import { getUserNameFromSession } from "@/lib/sessions";
@@ -54,6 +55,7 @@ export default async function RootLayout({
               Self-Service NoSQL
             </Link>
             <ModeToggle />
+            <AppsLink />
             <HelpLink />
             {username && <LogoutButton />}
           </header>

@@ -19,6 +19,8 @@ spec:
           - name: NEXT_PUBLIC_MONGODB_HOST
             #value: mongodb.public.jtektrnd.net
             value: mongodb.ssc.jtektrnd.net
+          - name: NEXT_PUBLIC_APPS_URL
+            value: https://homepage.ssc.jtektrnd.net
           envFrom:
             - secretRef:
                 name: self-service-mongodb-es
