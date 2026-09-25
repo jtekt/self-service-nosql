@@ -91,3 +91,18 @@ spec:
   target:
     name: self-service-mongodb-es
     creationPolicy: Orphan
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: self-service-mongodb
+spec:
+  parentRefs:
+    - name: eg
+      namespace: envoy-gateway-system
+  hostnames:
+    - self-service-mongodb.ssc.jtektrnd.net
+  rules:
+    - backendRefs:
+        - name: self-service-mongodb
+          port: 3000
