@@ -12,6 +12,12 @@ export const getUserIdByName = async (username: string) => {
   return user.userId.toString()
 }
 
+// Name the user chose, without the `<userId>-` prefix createDb adds
+const getDisplayName = (name: string, userId: string) => {
+  const prefix = `${userId}-`
+  return name.startsWith(prefix) ? name.slice(prefix.length) : name
+}
+
 export type DatabaseSummary = {
   name: string
   // Name the user chose, without the user ID prefix added by createDb
@@ -31,7 +37,7 @@ export const getDbsOfuser = async (
     usersInfo: username,
   })
 
-  const prefix = `${user.userId.toString()}-`
+  const userId = user.userId.toString()
   const names: string[] = [
     ...new Set<string>(user.roles.map(({ db }: any) => db)),
   ].sort()
@@ -41,12 +47,16 @@ export const getDbsOfuser = async (
 
   return names.map((name) => ({
     name,
-    displayName: name.startsWith(prefix) ? name.slice(prefix.length) : name,
+    displayName: getDisplayName(name, userId),
     size: sizes.get(name) ?? null,
   }))
 }
 
-export const getDbOfUser = async (username: string, dbName: string) => {
+// The user's database named dbName, or null if they have no role on it
+export const getDbOfUser = async (
+  username: string,
+  dbName: string
+): Promise<{ name: string; displayName: string } | null> => {
   const db = client.db("admin")
 
   const {
@@ -54,10 +64,15 @@ export const getDbOfUser = async (username: string, dbName: string) => {
   } = await db.command({
     usersInfo: username,
   })
+  if (!user) return null
 
   const foundDb = user.roles.find(({ db }: any) => db === dbName)
+  if (!foundDb) return null
 
-  return foundDb.db
+  return {
+    name: foundDb.db,
+    displayName: getDisplayName(foundDb.db, user.userId.toString()),
+  }
 }
 
 export const createDb = async (database: string, ownerName: string) => {

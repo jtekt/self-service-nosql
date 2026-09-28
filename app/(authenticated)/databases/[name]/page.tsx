@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/breadcrumb"
 
 import { env } from "next-runtime-env"
+import { notFound } from "next/navigation"
 import { getDatabaseCache } from "@/actions/databases"
 import DeleteButton from "@/components/delete-button"
 
@@ -20,11 +21,13 @@ export default async function DatabasePage(
   const NEXT_PUBLIC_MONGODB_HOST = env("NEXT_PUBLIC_MONGODB_HOST")
 
   const database = await getDatabaseCache(params.name)
+  if (!database.db) notFound()
+  const { name, displayName } = database.db
 
   const fields = [
     {
       label: "Database",
-      value: database.db,
+      value: name,
     },
     {
       label: "User",
@@ -40,7 +43,7 @@ export default async function DatabasePage(
 
     fields.push({
       label: "Connection string",
-      value: `mongodb://${database.username}:<PASSWORD>@${NEXT_PUBLIC_MONGODB_HOST}/${database.db}?authSource=admin&directConnection=true`,
+      value: `mongodb://${database.username}:<PASSWORD>@${NEXT_PUBLIC_MONGODB_HOST}/${name}?authSource=admin&directConnection=true`,
     })
   }
 
@@ -54,14 +57,12 @@ export default async function DatabasePage(
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>
-                {database ? database.db : "Database"}
-              </BreadcrumbPage>
+              <BreadcrumbPage>{displayName}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <div className="flex justify-between my-4 ">
-          <h2 className="text-3xl">{database ? database.db : "Database"}</h2>
+          <h2 className="text-3xl">{displayName}</h2>
           <DeleteButton name={params.name} />
         </div>
 

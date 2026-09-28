@@ -1,5 +1,5 @@
 export const {
-  MONGODB_CONNECTION_STRING = "mongodb://loclahost:27017?authSource=admin",
+  MONGODB_CONNECTION_STRING = "mongodb://localhost:27017?authSource=admin",
 
   SESSION_COOKIE_NAME = "self-service-nosql-session",
   SESSION_SECRET = "pleaseChangeThis",
