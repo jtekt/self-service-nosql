@@ -12,7 +12,17 @@ export const getUserIdByName = async (username: string) => {
   return user.userId.toString()
 }
 
-export const getDbsOfuser = async (username: string) => {
+export type DatabaseSummary = {
+  name: string
+  // Name the user chose, without the user ID prefix added by createDb
+  displayName: string
+  // Bytes on disk, or null if MongoDB hasn't created it yet (no data written)
+  size: number | null
+}
+
+export const getDbsOfuser = async (
+  username: string
+): Promise<DatabaseSummary[]> => {
   const db = client.db("admin")
 
   const {
@@ -21,7 +31,19 @@ export const getDbsOfuser = async (username: string) => {
     usersInfo: username,
   })
 
-  return user.roles.map(({ db }: any) => db)
+  const prefix = `${user.userId.toString()}-`
+  const names: string[] = [
+    ...new Set<string>(user.roles.map(({ db }: any) => db)),
+  ].sort()
+
+  const { databases } = await db.admin().listDatabases()
+  const sizes = new Map(databases.map((d) => [d.name, d.sizeOnDisk ?? 0]))
+
+  return names.map((name) => ({
+    name,
+    displayName: name.startsWith(prefix) ? name.slice(prefix.length) : name,
+    size: sizes.get(name) ?? null,
+  }))
 }
 
 export const getDbOfUser = async (username: string, dbName: string) => {
