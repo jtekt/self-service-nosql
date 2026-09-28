@@ -3,7 +3,7 @@ import { cache } from "react";
 import { getUserNameFromSession } from "@/lib/sessions";
 import {
   createDb,
-  // deleteDB,
+  deleteDb,
   getDbOfUser,
   getDbsOfuser,
 } from "../lib/databases";
@@ -25,6 +25,19 @@ export const createDbAction = async (
   }
 
   redirect(`/databases/${fullDbName}`);
+};
+
+export const deleteDbAction = async (dbName: string) => {
+  const username = await getUserNameFromSession();
+  if (!username) return { error: "Unauthorized" };
+
+  try {
+    await deleteDb(dbName, username);
+  } catch (error: any) {
+    return { error: error.message };
+  }
+
+  redirect(`/databases`);
 };
 
 export const getDatabasesCache = cache(async () => {

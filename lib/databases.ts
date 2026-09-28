@@ -81,6 +81,36 @@ export const createDb = async (database: string, ownerName: string) => {
   return fullDbName
 }
 
+export const deleteDb = async (database: string, ownerName: string) => {
+  const db = client.db("admin")
+
+  const {
+    users: [user],
+  } = await db.command({
+    usersInfo: ownerName,
+  })
+  if (!user) throw new Error(`User ${ownerName} not found`)
+
+  // Only databases created by this app for this user: named after their
+  // MongoDB user ID (see createDb) and owned by them
+  const userId = user.userId.toString()
+  const isOwner =
+    database.startsWith(`${userId}-`) &&
+    user.roles.some(
+      ({ role, db }: any) => role === "dbOwner" && db === database
+    )
+  if (!isOwner)
+    throw new Error(`${database} is not a database of user ${ownerName}`)
+
+  // Drop before revoking, so a failure never leaves a database without owner
+  await client.db(database).dropDatabase()
+
+  await db.command({
+    revokeRolesFromUser: ownerName,
+    roles: [{ role: "dbOwner", db: database }],
+  })
+}
+
 export const getReplicasetInfo = async () => {
   // UNUSED
   const db = client.db("admin")

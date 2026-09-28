@@ -9,6 +9,7 @@ import {
 
 import { env } from "next-runtime-env"
 import { getDatabaseCache } from "@/actions/databases"
+import DeleteButton from "@/components/delete-button"
 
 export default async function DatabasePage(
   props: {
@@ -61,6 +62,7 @@ export default async function DatabasePage(
         </Breadcrumb>
         <div className="flex justify-between my-4 ">
           <h2 className="text-3xl">{database ? database.db : "Database"}</h2>
+          <DeleteButton name={params.name} />
         </div>
 
         <dl className="divide-y">
