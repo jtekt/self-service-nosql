@@ -1,49 +1,89 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Check, Ban, Trash, Loader2 } from "lucide-react";
-import { deleteDbAction } from "@/actions/databases";
 import { startTransition, useActionState, useState } from "react";
+import { Trash2Icon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
+import { deleteDbAction } from "@/actions/databases";
 
 type Props = {
   name: string;
 };
 
-export default function DeleteButton(props: Props) {
-  const [waitingForConfirm, setWaitingForConfirm] = useState(false);
-
-  const actionWithName = deleteDbAction.bind(null, props.name);
+export default function DeleteButton({ name }: Props) {
+  const actionWithName = deleteDbAction.bind(null, name);
   const [state, action, pending] = useActionState(actionWithName, null);
+  const [open, setOpen] = useState(false);
+
+  // On success the action redirects to /databases
+  function onConfirm() {
+    startTransition(() => action());
+  }
 
   return (
-    <div className="flex flex-col items-end gap-2">
-      {waitingForConfirm ? (
-        <div className="inline-flex gap-2">
-          <Button
-            variant="destructive"
-            onClick={() => startTransition(() => action())}
-            disabled={pending}
-            aria-label="Confirm deletion"
-          >
-            {pending ? <Loader2 className="animate-spin" /> : <Check />}
-          </Button>
-          <Button
-            onClick={() => setWaitingForConfirm(false)}
-            disabled={pending}
-            aria-label="Cancel"
-          >
-            <Ban />
-          </Button>
-        </div>
-      ) : (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button
-          onClick={() => setWaitingForConfirm(true)}
-          aria-label="Delete database"
+          variant="destructive"
+          size="icon"
+          aria-label={`Delete ${name}`}
+          title="Delete database"
         >
-          <Trash />
+          <Trash2Icon />
         </Button>
-      )}
-      {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
-    </div>
+      </DialogTrigger>
+
+      <DialogContent className="space-y-2">
+        <DialogHeader>
+          <DialogTitle>Delete database</DialogTitle>
+          <DialogDescription>
+            You are about to permanently delete the following database
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="rounded bg-accent p-2 font-mono">{name}</div>
+
+        <p className="text-destructive">
+          All of its collections and data are deleted with it. This action
+          cannot be undone.
+        </p>
+
+        {state?.error && (
+          <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+            {state.error}
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={pending}
+          >
+            Cancel
+          </Button>
+
+          <Button variant="destructive" onClick={onConfirm} disabled={pending}>
+            {pending ? (
+              <span className="flex items-center gap-2">
+                <Spinner />
+                Deleting…
+              </span>
+            ) : (
+              "Delete database"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
